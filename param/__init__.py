@@ -18,7 +18,7 @@ parameter types (e.g. Number).
 
 import os.path
 
-from .parameterized import Parameterized, Parameter, String, \
+from param.parameterized import Parameterized, Parameter, String, \
      descendents, ParameterizedFunction, ParamOverrides
 
 
@@ -698,6 +698,7 @@ class Integer(Number):
             raise ValueError("Parameter '{}' must be an integer.".format(self._attrib_name))
 
         self._checkBounds(val)
+
 
 
 class Magnitude(Number):

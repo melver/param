@@ -1096,7 +1096,7 @@ class Parameterized(metaclass=ParameterizedMetaclass):
             for a in args:
                 if isinstance(a,FunctionType): args[args.index(a)]=a()
 
-            s = ' '.join( (str(x) for x in args) )
+            s = ' '.join(str(x) for x in args)
 
             if dbprint_prefix and callable(dbprint_prefix):
                 prefix=dbprint_prefix() # pylint: disable-msg=E1102
