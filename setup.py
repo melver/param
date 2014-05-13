@@ -1,20 +1,13 @@
 #!/usr/bin/env python
-
+import sys
 from distutils.core import setup
-
-import versioneer
-versioneer.versionfile_source = 'param/_version.py'
-versioneer.versionfile_build = 'param/_version.py'
-versioneer.tag_prefix = '' 
-versioneer.parentdir_prefix = 'param-' 
-
+import param
 
 setup_args = {}
 
 setup_args.update(dict(
     name='param',
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
+    version=str(param.__version__),
     description='Declarative Python programming using Parameters.',
     long_description=open('README.rst').read(),
     author= "IOAM",
@@ -28,9 +21,13 @@ setup_args.update(dict(
     classifiers = [
         "License :: OSI Approved :: BSD License",
         "Development Status :: 5 - Production/Stable",
-        "Programming Language :: Python :: 2.5",
+        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.2",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
@@ -40,5 +37,10 @@ setup_args.update(dict(
 ))
 
 
+
 if __name__=="__main__":
+
+    if 'bdist_wininst' in sys.argv or 'upload' in sys.argv:
+        param.__version__.verify()
+
     setup(**setup_args)
