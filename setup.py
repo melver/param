@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 from distutils.core import setup
-import param
+import param,numbergen
 
 setup_args = {}
 
@@ -17,7 +17,8 @@ setup_args.update(dict(
     platforms=['Windows', 'Mac OS X', 'Linux'],
     license='BSD',
     url='http://ioam.github.com/param/',
-    packages = ["param"],
+    packages = ["param","numbergen"],
+    provides = ["param","numbergen"],
     classifiers = [
         "License :: OSI Approved :: BSD License",
         "Development Status :: 5 - Production/Stable",
@@ -42,5 +43,6 @@ if __name__=="__main__":
 
     if 'bdist_wininst' in sys.argv or 'upload' in sys.argv:
         param.__version__.verify()
+        numbergen.__version__.verify()
 
     setup(**setup_args)

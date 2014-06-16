@@ -5,24 +5,33 @@ strings, constant and read-only parameters, and type or range checking
 at assignment time.
 
 Potentially useful for any large Python program that needs
-user-modifiable object attributes; see the parameterized.Parameter and
-parameterized.Parameterized classes for more information.
-
+user-modifiable object attributes; see the Parameter and Parameterized
+classes for more information.  If you do not want to add a dependency
+on external code by importing from a separately installed param
+package, you can simply save this file as param.py and copy it and
+parameterized.py directly into your own package.
 
 This file contains subclasses of Parameter, implementing specific
-parameter types (e.g. Number).
+parameter types (e.g. Number), and also imports the definition of
+Parameters and Parameterized classes.
 """
-
-# CEBALERT: we need more documentation above, now that params is a
-# separate package.
 
 import os.path
 
-from param.parameterized import Parameterized, Parameter, String, \
+from .parameterized import Parameterized, Parameter, String, \
      descendents, ParameterizedFunction, ParamOverrides
 
-from param.version import Version
-__version__ = Version(release=(1,2,0), fpath=__file__, commit="$Format:%h$")
+
+# Determine up-to-date version information, if possible, but with a
+# safe fallback to ensure that this file and parameterized.py are the
+# only two required files.
+try:
+    from .version import Version
+    __version__ = Version(release=(1,2,1), fpath=__file__, 
+                          commit="$Format:%h$", reponame="param")
+except:
+    __version__ = '1.2.1-unknown'
+
 
 #: Top-level object to allow messaging not tied to a particular
 #: Parameterized object, as in 'param.main.warning("Invalid option")'.
@@ -976,23 +985,36 @@ class ObjectSelector(Selector):
 
 
 class ClassSelector(Selector):
-    """Parameter whose value is an instance of the specified class."""
+    """
+    Parameter whose value is a specified class or an instance of that class.
+    By default, requires an instance, but if is_instance=False, accepts a class instead.
+    Both class and instance values respect the instantiate slot, though it matters only
+    for is_instance=True.
+    """
 
-    __slots__ = ['class_','allow_None']
+    __slots__ = ['class_','allow_None','is_instance']
 
-    def __init__(self,class_,default=None,instantiate=True,allow_None=False,**params):
+    def __init__(self,class_,default=None,instantiate=True,allow_None=False,is_instance=True,**params):
         self.class_ = class_
         self.allow_None = (default is None or allow_None)
+        self.is_instance = is_instance
         self._check_value(default)
         super(ClassSelector,self).__init__(default=default,instantiate=instantiate,**params)
 
 
     def _check_value(self,val,obj=None):
-        """val must be None or an instance of self.class_"""
-        if not (isinstance(val,self.class_)) and not (val is None and self.allow_None):
-            raise ValueError(
-                "Parameter '{}' value must be an instance of {}, not '{}'".format(
-                self._attrib_name, self.class_.__name__, val))
+        """val must be None, an instance of self.class_ if self.is_instance=True or a subclass of self_class if self.is_instance=False"""
+        if self.is_instance:
+            if not (isinstance(val,self.class_)) and not (val is None and self.allow_None):
+                raise ValueError(
+                    "Parameter '{}' value must be an instance of {}, not '{}'".format(
+                    self._attrib_name, self.class_.__name__, val))
+        else:
+            if not (val is None and self.allow_None) and not (issubclass(val,self.class_)):
+                raise ValueError(
+                    "Parameter '{}' must be a subclass of {}, not '{}'".format(
+                    val.__name__, self.class_.__name__, val.__class__.__name__))
+
 
     def __set__(self,obj,val):
         self._check_value(val,obj)
