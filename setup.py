@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import sys
 from distutils.core import setup
-import param,numbergen
 
 setup_args = {}
 
 setup_args.update(dict(
     name='param',
-    version=str(param.__version__),
+    version="1.2.1",
     description='Declarative Python programming using Parameters.',
     long_description=open('README.rst').read(),
     author= "IOAM",
@@ -41,8 +40,9 @@ setup_args.update(dict(
 
 if __name__=="__main__":
 
-    if 'bdist_wininst' in sys.argv or 'upload' in sys.argv:
-        param.__version__.verify()
-        numbergen.__version__.verify()
+    if 'upload' in sys.argv:
+        import param, numbergen
+        param.__version__.verify(setup_args['version'])
+        numbergen.__version__.verify(setup_args['version'])
 
     setup(**setup_args)

@@ -11,6 +11,7 @@ from types import FunctionType
 from functools import partial, wraps
 
 import logging
+import random
 
 from logging import DEBUG, INFO, WARNING, ERROR, CRITICAL # pyflakes:ignore (API import)
 VERBOSE = INFO - 1
@@ -709,6 +710,9 @@ def script_repr(val,imports,prefix,settings):
     script_repr_reg dictionary. Using the type as a key, add a
     function that returns a suitable representation of instances of
     that type, and adds the required import statement.
+
+    The repr of a parameter can be suppressed by returning None from
+    the appropriate hook in script_repr_reg.
     """
     # CB: doc prefix & settings or realize they don't need to be
     # passed around, etc.
@@ -749,6 +753,29 @@ def container_script_repr(container,imports,prefix,settings):
     # no imports to add for built-in types
 
     return rep
+
+
+def random_state_script_repr(state,imports,prefix,settings):
+    """
+    Random number generators in general do not have succinct reprs. If
+    a random state object is encountered, returns the representation
+    to create a new random state object.
+    """
+    if isinstance(state, random.Random):
+        return None
+    elif isinstance(state, numpy.random.RandomState):
+        return None
+
+try:
+    import numpy
+    script_repr_reg[numpy.random.RandomState] = random_state_script_repr
+except:
+    pass
+finally:
+    script_repr_reg[random.Random] = random_state_script_repr
+
+
+
 
 # why I have to type prefix and settings?
 def function_script_repr(fn,imports,prefix,settings):

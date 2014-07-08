@@ -27,7 +27,7 @@ from .parameterized import Parameterized, Parameter, String, \
 # only two required files.
 try:
     from .version import Version
-    __version__ = Version(release=(1,2,1), fpath=__file__, 
+    __version__ = Version(release=(1,2,1), fpath=__file__,
                           commit="$Format:%h$", reponame="param")
 except:
     __version__ = '1.2.1-unknown'
@@ -38,8 +38,8 @@ except:
 main=Parameterized(name="main")
 
 
-# A global random seed available for controlling the behaviour of
-# parameterized objects with random state.
+# A global random seed (integer or rational) available for controlling
+# the behaviour of parameterized objects with random state.
 random_seed = 42
 
 
@@ -1334,4 +1334,3 @@ class Foldername(Path):
             return resolve_path(path, path_to_file=False, search_paths=self.search_paths)
         else:
             return resolve_path(path, path_to_file=False)
-

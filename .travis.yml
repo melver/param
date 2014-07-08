@@ -6,8 +6,12 @@ python:
   - "3.3"
   - "3.4"
 
-# no dependencies (coveralls only for coverage)
-install: pip install coveralls
+notifications:
+  email:
+    on_failure: change # [always|never|change] default: always
+    
+# no dependencies (coveralls, ipython only needed for testing)
+install: pip install coveralls ipython
 
 script: nosetests --with-doctest --with-coverage --cover-package=param
 
